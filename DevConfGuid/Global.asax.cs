@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -10,63 +9,6 @@ using System.Web.Routing;
 
 namespace DevConfGuid
 {
-    public class Db
-    {
-        public string ConnectionString
-        {
-            get
-            {
-                string tcpAddress = ConfigurationManager.AppSettings["sa_host"];
-                string dbPassword = ConfigurationManager.AppSettings["sa_password"];
-
-                return "Server=" + tcpAddress + ";Database=master;User Id=sa;Password=" + dbPassword + ";Integrated Security=False;Connect Timeout=30";
-            }
-        }
-
-        private void Provision(string text)
-        {
-            var connectionString = ConnectionString;
-
-            using (var connection = System.Data.SqlClient.SqlClientFactory.Instance.CreateConnection())
-            {
-                connection.ConnectionString = connectionString;
-                var command = connection.CreateCommand();
-                command.CommandText = text;
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-        }
-
-        public void Create()
-        {
-            string provision = @"
-IF NOT EXISTS(SELECT * from sys.databases WHERE name = 'Guids')
-BEGIN
-    CREATE DATABASE Guids;
-end
-            ";
-
-            string table = @"
-IF NOT EXISTS(select * from sys.objects where type ='U' and name = 'guids') 
-begin 
-CREATE TABLE guids.dbo.guids (id VARCHAR(255) NOT NULL PRIMARY KEY); 
-end 
-
-            ";
-
-            try
-            {
-                this.Provision(provision);
-                this.Provision(table);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Connecting to: " + ConnectionString, e);
-            }
-        }
-    }
-
-
     public class WebApiApplication : System.Web.HttpApplication
     {
         protected void Application_Start()
@@ -76,16 +18,6 @@ end
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            try
-            {
-                var db = new Db();
-                db.Create();
-            }
-            catch
-            {
-                throw;
-            }
         }
     }
 }
