@@ -1,0 +1,22 @@
+version: "2"
+services:
+  mssql:
+    image: microsoft/mssql-server-2016-express-windows:latest
+    ports:
+    - "1433:1433"
+    environment:
+    - sa_password=7?107=uoVzejpVeIN39
+  web:
+    build:
+      context: "."
+    ports:
+      - "80:80"
+    depends_on:
+      - mssql
+    links:
+      - mssql
+
+networks:
+  default:
+    external:
+      name: nat
