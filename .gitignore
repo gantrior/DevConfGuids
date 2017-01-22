@@ -2,3 +2,6 @@
 
 /DevConfGuid/bin
 /DevConfGuid/obj
+
+/packages
+/.vs
