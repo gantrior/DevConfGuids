@@ -5,7 +5,7 @@ services:
     ports:
     - "1433:1433"
     environment:
-    - sa_password=7?107=uoVzejpVeIN39
+    - sa_password=devconftest
   web:
     build:
       context: "."
